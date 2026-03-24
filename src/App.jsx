@@ -1,12 +1,8 @@
 import "./App.css";
-import { Button } from "@/components/ui/button";
+import Dataset from "./widgets/Dataset";
 
 function App() {
-  return (
-    <>
-      <Button>Add Task</Button>
-    </>
-  );
+  return <Dataset></Dataset>;
 }
 
 export default App;
