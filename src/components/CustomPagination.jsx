@@ -50,27 +50,6 @@ const CustomPagination = (props) => {
         </Button>
       </div>
 
-      {/* Стандартная пагинация */}
-      <div className="flex items-center gap-1">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onPageChange((p) => Math.max(1, p - 1))}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button variant="default" size="sm">
-          {currentPage}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-
       {/* Выбор количества на странице */}
       <Select
         value={String(pageSize)}

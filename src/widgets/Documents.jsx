@@ -60,99 +60,110 @@ const Documents = () => {
       name: "При отклике.txt",
       mode: "Общее",
       words: "0",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 5,
+      uploadTime: "19.03.2026 06:00",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 2,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 10,
+      uploadTime: "19.03.2026 06:01",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 3,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 7,
+      uploadTime: "19.03.2026 06:02",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 4,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 3,
+      uploadTime: "19.03.2026 06:03",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 5,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 4,
+      uploadTime: "19.03.2026 06:03",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 6,
       name: "При отклике.txt",
       mode: "Общее",
       words: "0",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 2,
+      uploadTime: "19.03.2026 06:04",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 7,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 9,
+      uploadTime: "19.03.2026 06:05",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 8,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 10,
+      uploadTime: "19.03.2026 06:06",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 9,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 100,
+      uploadTime: "19.03.2026 06:07",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 10,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 50,
+      uploadTime: "19.03.2026 06:08",
       status: "Отключено",
+      orderNumber: null,
     },
     {
       id: 11,
       name: "Документ.txt",
       mode: "Общее",
       words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
+      requests: 80,
+      uploadTime: "19.03.2026 06:10",
       status: "Отключено",
+      orderNumber: null,
     },
   ]);
 
@@ -201,14 +212,50 @@ const Documents = () => {
     }));
   };
 
+  // Filtration
+  const filteredFiles = [...files]; // Нужно сделать фильтрацию
+
+  // Sorting
+  function parseCustomDate(dateStr) {
+    const [date, time] = dateStr.split(" ");
+    const [day, month, year] = date.split(".");
+    const [hours, minutes] = time.split(":");
+    return new Date(year, month - 1, day, hours, minutes);
+  }
+
+  const sortedAndFilteredFiles = [...filteredFiles].sort((a, b) => {
+    console.log("Запускаем сортировку");
+    console.log("sortBy", sortBy);
+    console.log("sortOrder", sortOrder);
+
+    if (sortBy === "time")
+      return sortOrder === "asc"
+        ? parseCustomDate(a.uploadTime) - parseCustomDate(b.uploadTime)
+        : parseCustomDate(b.uploadTime) - parseCustomDate(a.uploadTime);
+
+    return sortOrder === "asc"
+      ? a.requests - b.requests
+      : b.requests - a.requests;
+  });
+  let i = 1;
+  sortedAndFilteredFiles.map((file) => {
+    file.orderNumber = i;
+    i++;
+  });
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const filteredFiles = [...files]; // Нужно сделать фильтрацию
-  const displayedFiles = filteredFiles.slice(startIndex, endIndex);
+
+  const displayedFiles = sortedAndFilteredFiles.slice(startIndex, endIndex);
+  console.log(
+    sortedAndFilteredFiles.map((file) => {
+      return file.uploadTime;
+    })
+  );
 
   return (
     <div className="flex flex-col h-full p-[1.5rem]">
@@ -318,12 +365,15 @@ const Documents = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+              onClick={() => {
+                setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                setCurrentPage(1);
+              }}
             >
               {sortOrder === "asc" ? (
-                <ArrowUpWideNarrow className="h-4 w-4" />
-              ) : (
                 <ArrowDownNarrowWide className="h-4 w-4" />
+              ) : (
+                <ArrowUpWideNarrow className="h-4 w-4" />
               )}
             </Button>
           </div>
@@ -386,7 +436,7 @@ const Documents = () => {
                       checked={selectedFiles.includes(file.id)}
                       onCheckedChange={() => toggleFile(file.id)}
                     />
-                    {file.id}
+                    {file?.orderNumber}
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">{file.name}</TableCell>
