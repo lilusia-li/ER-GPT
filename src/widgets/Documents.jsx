@@ -40,6 +40,8 @@ import {
   Settings2,
 } from "lucide-react";
 
+import CustomPagination from "@/components/CustomPagination.jsx";
+
 import { useState } from "react";
 
 import { Search } from "lucide-react";
@@ -199,6 +201,15 @@ const Documents = () => {
     }));
   };
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const filteredFiles = [...files]; // Нужно сделать фильтрацию
+  const displayedFiles = filteredFiles.slice(startIndex, endIndex);
+
   return (
     <div className="flex flex-col h-full p-[1.5rem]">
       <h2 className="text-[1rem]">Документы</h2>
@@ -208,7 +219,7 @@ const Documents = () => {
         <a href="/">Подробнее</a>
       </p>
 
-      <div className="flex gap-[0.5rem] flex-wrap justify-between">
+      <div className="flex gap-[0.5rem] flex-wrap justify-between py-[1rem]">
         <div className="flex gap-[0.5rem] flex-wrap">
           <Select value={showBy} onValueChange={setShowBy}>
             <SelectTrigger className="w-[160px] text-[length:var(--font-size-base)]">
@@ -367,7 +378,7 @@ const Documents = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="text-[0.875rem]">
-            {files.map((file) => (
+            {displayedFiles.map((file) => (
               <TableRow key={file.id} className="py-0">
                 <TableCell>
                   <div className="flex gap-[0.5rem] items-center">
@@ -424,6 +435,14 @@ const Documents = () => {
           </TableBody>
         </Table>
       </div>
+
+      <CustomPagination
+        totalItems={files.length}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+      ></CustomPagination>
     </div>
   );
 };
