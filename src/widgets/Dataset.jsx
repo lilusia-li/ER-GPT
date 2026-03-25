@@ -1,15 +1,21 @@
 import DatasetPanel from "./DatasetPanel";
-// import Documents from "./Documents";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import Documents from "./Documents";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const Dataset = () => {
   return (
     <>
-      <SidebarProvider>
-        <DatasetPanel></DatasetPanel>
-      </SidebarProvider>
-
-      {/* <Documents></Documents> */}
+      <TooltipProvider>
+        <SidebarProvider>
+          <div className="flex w-full">
+            <DatasetPanel></DatasetPanel>
+            <main className="flex w-full">
+              <Documents></Documents>
+            </main>
+          </div>
+        </SidebarProvider>
+      </TooltipProvider>
     </>
   );
 };
