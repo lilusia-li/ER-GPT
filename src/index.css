@@ -156,3 +156,7 @@ body {
 [data-slot="table-cell"] {
   padding-block: 0.1rem;
 }
+
+@layer components {
+  
+}

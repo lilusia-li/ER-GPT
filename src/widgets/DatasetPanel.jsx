@@ -27,7 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 const DatasetPanel = () => {
-  const { state } = useSidebar();
+  const { state, open } = useSidebar();
 
   const navItems = [
     {
@@ -35,11 +35,6 @@ const DatasetPanel = () => {
       icon: FileText,
       href: "/documents",
       isActive: true,
-    },
-    {
-      title: "Трубопровод",
-      icon: FileText,
-      href: "/pipeline",
     },
     {
       title: "Тестирование поиска",
@@ -57,7 +52,7 @@ const DatasetPanel = () => {
   return (
     <>
       <Sidebar variant="sidebar" collapsible="icon">
-        <SidebarTrigger className="absolute top-[20%] -right-[15px] bg-[var(--sidebar-primary)] z-10 border-[var(--sidebar-primary)]" />
+        <SidebarTrigger className="absolute top-[20%] -right-3.75 bg-sidebar-primary z-10 border-sidebar-primary" />
         <SidebarHeader>
           <div className="flex flex-wrap justify-between">
             <FileText className="h-8 w-8 text-primary" />
@@ -65,7 +60,7 @@ const DatasetPanel = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">...</Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className={`w-[170px]`}>
+              <DropdownMenuContent className={`w-42.5`}>
                 <DropdownMenuItem>
                   <Pencil />
                   <Button variant="outline">Редактировать</Button>
@@ -77,12 +72,17 @@ const DatasetPanel = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <h1 className="text-[0.875rem]" hidden={state === "collapsed"}>
-            {datasetName}
-          </h1>
-          <p className="text-[0.75rem]" hidden={state === "collapsed"}>
-            Useful for when you want to answer queries about the {datasetName}
-          </p>
+          {open && (
+            <div className=" transition-opacity animate-in duration-500">
+              <h1 className="text-[0.875rem]" hidden={state === "collapsed"}>
+                {datasetName}
+              </h1>
+              <p className="text-[0.75rem]" hidden={state === "collapsed"}>
+                Useful for when you want to answer queries about the{" "}
+                {datasetName}
+              </p>
+            </div>
+          )}
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
@@ -94,7 +94,9 @@ const DatasetPanel = () => {
                     <SidebarMenuButton asChild>
                       <a href={item.href}>
                         <item.icon className="h-4 w-4" />
-                        <span className="text-[0.8125rem]">{item.title}</span>
+                        {open && (
+                          <span className="text-[0.8125rem]">{item.title}</span>
+                        )}
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

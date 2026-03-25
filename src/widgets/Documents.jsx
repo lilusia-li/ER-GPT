@@ -47,114 +47,17 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useDocument } from "@/api/documents";
 
-const Documents = () => {
+const Documents = ({ search }) => {
   const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
   const [sortBy, setSortBy] = useState("count");
   const [showBy, setShowBy] = useState("Все");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const { data, isLoading } = useDocument({ search });
 
-  const [files, setFiles] = useState([
-    {
-      id: 1,
-      name: "При отклике.txt",
-      mode: "Общее",
-      words: "0",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 2,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 3,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 4,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 5,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 6,
-      name: "При отклике.txt",
-      mode: "Общее",
-      words: "0",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 7,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 8,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 9,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 10,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-    {
-      id: 11,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 0,
-      uploadTime: "19.03.2026 06:17",
-      status: "Отключено",
-    },
-  ]);
+  const files = data?.result || [];
+  const total = data?.total || 0;
 
   // Table-column  "checkbox"
   const isAllSelected =
@@ -193,7 +96,7 @@ const Documents = () => {
         : file
     );
 
-    setFiles(updatedFiles);
+    // setFiles(updatedFiles);
 
     setEnabledStates((prev) => ({
       ...prev,
@@ -211,7 +114,7 @@ const Documents = () => {
   const displayedFiles = filteredFiles.slice(startIndex, endIndex);
 
   return (
-    <div className="flex flex-col h-full p-[1.5rem]">
+    <div className="flex flex-col h-full p-6 w-full">
       <h2 className="text-[1rem]">Документы</h2>
       <p className="text-[0.875rem]">
         Здесь отображаются все файлы базы знаний, и вся база знаний может быть
@@ -219,74 +122,32 @@ const Documents = () => {
         <a href="/">Подробнее</a>
       </p>
 
-      <div className="flex gap-[0.5rem] flex-wrap justify-between py-[1rem]">
-        <div className="flex gap-[0.5rem] flex-wrap">
+      <div className="flex gap-2 flex-wrap justify-between py-4">
+        <div className="flex gap-2 flex-wrap">
           <Select value={showBy} onValueChange={setShowBy}>
-            <SelectTrigger className="w-[160px] text-[length:var(--font-size-base)]">
+            <SelectTrigger className="w-40 text-(length:--font-size-base)">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectItem
-                value="Все"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Все
-              </SelectItem>
-              <SelectItem
-                value="В очереди"
-                className="text-[length:var(--font-size-base)]"
-              >
-                В очереди
-              </SelectItem>
-              <SelectItem
-                value="Индексация"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Индексация
-              </SelectItem>
-              <SelectItem
-                value="Приостановлено"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Приостановлено
-              </SelectItem>
-              <SelectItem
-                value="Ошибка"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Ошибка
-              </SelectItem>
-              <SelectItem
-                value="Доступно"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Доступно
-              </SelectItem>
-              <SelectItem
-                value="Включено"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Включено
-              </SelectItem>
-              <SelectItem
-                value="Отключено"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Отключено
-              </SelectItem>
-              <SelectItem
-                value="Архивировано"
-                className="text-[length:var(--font-size-base)]"
-              >
-                Архивировано
-              </SelectItem>
+            <SelectContent
+              position="popper"
+              className="text-(length:--font-size-base)"
+            >
+              <SelectItem value="Все">Все</SelectItem>
+              <SelectItem value="В очереди">В очереди</SelectItem>
+              <SelectItem value="Индексация">Индексация</SelectItem>
+              <SelectItem value="Приостановлено">Приостановлено</SelectItem>
+              <SelectItem value="Ошибка">Ошибка</SelectItem>
+              <SelectItem value="Доступно">Доступно</SelectItem>
+              <SelectItem value="Включено">Включено</SelectItem>
+              <SelectItem value="Отключено">Отключено</SelectItem>
+              <SelectItem value="Архивировано">Архивировано</SelectItem>
             </SelectContent>
           </Select>
 
-          <InputGroup className="max-w-[200px] ">
+          <InputGroup className="max-w-50 ">
             <InputGroupInput
               placeholder="Поиск"
-              className="text-[length:var(--font-size-base)]"
+              className="text-(length:--font-size-base)"
             />
             <InputGroupAddon>
               <Search />
@@ -348,92 +209,94 @@ const Documents = () => {
         </div>
       </div>
 
-      <div className="h-0 grow overflow-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="text-[0.75rem] ">
-              <TableHead className="w-[50px] ">
-                <div className="flex gap-[0.5rem] items-center">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={toggleAll}
-                    aria-label="Выбрать всё"
-                  />
-                  #
-                </div>
-              </TableHead>
-              <TableHead className="max-w-[200px]">НАЗВАНИЕ ФАЙЛА</TableHead>
-              <TableHead className="whitespace-normal">
-                РЕЖИМ ДРОБЛЕНИЯ
-              </TableHead>
-              <TableHead>СЛОВА</TableHead>
-              <TableHead className="whitespace-normal">
-                КОЛИЧЕСТВО ОБРАЩЕНИЙ
-              </TableHead>
-              <TableHead className="whitespace-normal">
-                ВРЕМЯ ЗАГРУЗКИ
-              </TableHead>
-              <TableHead>СТАТУС</TableHead>
-              <TableHead className="w-[50px]">ДЕЙСТВИЕ</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="text-[0.875rem]">
-            {displayedFiles.map((file) => (
-              <TableRow key={file.id} className="py-0">
-                <TableCell>
+      <div className="h-full overflow-auto w-full">
+        {!isLoading && (
+          <Table>
+            <TableHeader>
+              <TableRow className="text-[0.75rem] ">
+                <TableHead className="w-12.5 ">
                   <div className="flex gap-[0.5rem] items-center">
                     <Checkbox
-                      checked={selectedFiles.includes(file.id)}
-                      onCheckedChange={() => toggleFile(file.id)}
+                      checked={isAllSelected}
+                      onCheckedChange={toggleAll}
+                      aria-label="Выбрать всё"
                     />
-                    {file.id}
+                    #
                   </div>
-                </TableCell>
-                <TableCell className="font-medium">{file.name}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{file.mode}</Badge>
-                </TableCell>
-                <TableCell>{file.words}</TableCell>
-                <TableCell>{file.requests}</TableCell>
-                <TableCell>{file.uploadTime}</TableCell>
-                <TableCell>
-                  <div className="flex gap-[0.5rem] items-center">
-                    <div
-                      className={cn(
-                        "h-2 w-2 rounded-[3px]",
-                        enabledStates[file.id]
-                          ? "bg-green-500"
-                          : "border border-solid border-gray-400"
-                      )}
-                    ></div>
-                    {file.status}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={enabledStates[file.id]}
-                    onCheckedChange={(checked) =>
-                      toggleSwitch(file.id, checked)
-                    }
-                  />
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Settings2 />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="text-[0.75rem]">
-                      <p>Настройки сегментации</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+                </TableHead>
+                <TableHead className="max-w-[200px]">НАЗВАНИЕ ФАЙЛА</TableHead>
+                <TableHead className="whitespace-normal">
+                  РЕЖИМ ДРОБЛЕНИЯ
+                </TableHead>
+                <TableHead>СЛОВА</TableHead>
+                <TableHead className="whitespace-normal">
+                  КОЛИЧЕСТВО ОБРАЩЕНИЙ
+                </TableHead>
+                <TableHead className="whitespace-normal">
+                  ВРЕМЯ ЗАГРУЗКИ
+                </TableHead>
+                <TableHead>СТАТУС</TableHead>
+                <TableHead className="w-[50px]">ДЕЙСТВИЕ</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody className="text-[0.875rem]">
+              {displayedFiles.map((file) => (
+                <TableRow key={file.id} className="py-0">
+                  <TableCell>
+                    <div className="flex gap-[0.5rem] items-center">
+                      <Checkbox
+                        checked={selectedFiles.includes(file.id)}
+                        onCheckedChange={() => toggleFile(file.id)}
+                      />
+                      {file.id}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{file.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{file.mode}</Badge>
+                  </TableCell>
+                  <TableCell>{file.words}</TableCell>
+                  <TableCell>{file.requests}</TableCell>
+                  <TableCell>{file.uploadTime}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-[0.5rem] items-center">
+                      <div
+                        className={cn(
+                          "h-2 w-2 rounded-[3px]",
+                          enabledStates[file.id]
+                            ? "bg-green-500"
+                            : "border border-solid border-gray-400"
+                        )}
+                      ></div>
+                      {file.status}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={enabledStates[file.id]}
+                      onCheckedChange={(checked) =>
+                        toggleSwitch(file.id, checked)
+                      }
+                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Settings2 />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-[0.75rem]">
+                        <p>Настройки сегментации</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       <CustomPagination
