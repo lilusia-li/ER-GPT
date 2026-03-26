@@ -30,7 +30,7 @@ const CustomPagination = (props) => {
 
         <div className="flex items-center gap-1">
           <Input
-            type="number"
+            type="text"
             value={currentPage}
             onChange={(e) => onPageChange(Number(e.target.value))}
             className="w-16 text-center"
