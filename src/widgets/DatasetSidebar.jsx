@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const DatasetPanel = () => {
+const DatasetSidebar = () => {
   const { state } = useSidebar();
 
   const navItems = [
@@ -108,4 +108,4 @@ const DatasetPanel = () => {
     </>
   );
 };
-export default DatasetPanel;
+export default DatasetSidebar;
