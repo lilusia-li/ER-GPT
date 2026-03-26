@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const DatasetSidebar = () => {
   const { state } = useSidebar();
@@ -57,8 +58,8 @@ const DatasetSidebar = () => {
   return (
     <>
       <Sidebar variant="sidebar" collapsible="icon">
-        <SidebarTrigger className="absolute top-[20%] -right-[15px] bg-[var(--sidebar-primary)] z-10 border-[var(--sidebar-primary)]" />
-        <SidebarHeader>
+        <SidebarTrigger className="absolute top-[6rem] -right-[15px] bg-[var(--sidebar-primary)] z-10 border-[var(--sidebar-primary)]" />
+        <SidebarHeader className="min-h-[8.13rem]">
           <div className="flex flex-wrap justify-between">
             <FileText className="h-8 w-8 text-primary" />
             <DropdownMenu>
@@ -77,12 +78,23 @@ const DatasetSidebar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <h1 className="text-[0.875rem]" hidden={state === "collapsed"}>
-            {datasetName}
-          </h1>
-          <p className="text-[0.75rem]" hidden={state === "collapsed"}>
-            Useful for when you want to answer queries about the {datasetName}
-          </p>
+
+          <div
+            className={cn(
+              "transition-all duration-300 overflow-hidden",
+              state === "collapsed"
+                ? "opacity-0 max-h-0"
+                : "opacity-100 max-h-40 mt-2"
+            )}
+          >
+            <h1 className="relative text-[0.875rem] whitespace-nowrap">
+              {datasetName}
+            </h1>
+            <p className="relative text-[0.75rem] whitespace-nowrap">
+              Useful for when you want to answer <br /> queries about the
+              {datasetName}
+            </p>
+          </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
