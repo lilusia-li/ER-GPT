@@ -50,126 +50,21 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useDocuments } from "@/api/documents";
 
 const Documents = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
   const [sortBy, setSortBy] = useState("count");
   const [showBy, setShowBy] = useState("Все");
-  const [searchBy, setSearchBy] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const [files, setFiles] = useState([
-    {
-      id: 1,
-      name: "При отклике.txt",
-      mode: "Общее",
-      words: "0",
-      requests: 5,
-      uploadTime: "19.03.2026 06:00",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 2,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 10,
-      uploadTime: "19.03.2026 06:01",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 3,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 7,
-      uploadTime: "19.03.2026 06:02",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 4,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 3,
-      uploadTime: "19.03.2026 06:03",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 5,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 4,
-      uploadTime: "19.03.2026 06:03",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 6,
-      name: "При отклике.txt",
-      mode: "Общее",
-      words: "0",
-      requests: 2,
-      uploadTime: "19.03.2026 06:04",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 7,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 9,
-      uploadTime: "19.03.2026 06:05",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 8,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 10,
-      uploadTime: "19.03.2026 06:06",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 9,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 100,
-      uploadTime: "19.03.2026 06:07",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 10,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 50,
-      uploadTime: "19.03.2026 06:08",
-      status: "Отключено",
-      orderNumber: null,
-    },
-    {
-      id: 11,
-      name: "Документ.txt",
-      mode: "Общее",
-      words: "1.5k",
-      requests: 80,
-      uploadTime: "19.03.2026 06:10",
-      status: "Отключено",
-      orderNumber: null,
-    },
-  ]);
+  const { data, isLoading } = useDocuments({ searchQuery });
+
+  const files = data?.result || [];
+  console.log(files);
+  const total = data?.total || 0;
+  // const [files, setFiles] = useState([]);
 
   // Table-column  "checkbox"
   const isAllSelected =
@@ -199,16 +94,17 @@ const Documents = () => {
   });
 
   const toggleSwitch = (fileId, checked) => {
-    const updatedFiles = files.map((file) =>
-      file.id === fileId
-        ? {
-            ...file,
-            status: file.status === "Отключено" ? "Включено" : "Отключено",
-          }
-        : file
-    );
+    // const updatedFiles =
+    // ? {
+    //   ...file,
+    //   status: file.status === "Отключено" ? "Включено" : "Отключено",
+    // }
+    files.map((file) => {
+      if (file.id === fileId)
+        file.status === "Отключено" ? "Включено" : "Отключено";
+    }); // просто изменяем статус, надеясь на ссылочность объектов
 
-    setFiles(updatedFiles);
+    // setFiles(updatedFiles);
 
     setEnabledStates((prev) => ({
       ...prev,
@@ -217,23 +113,16 @@ const Documents = () => {
   };
 
   // Filtration
-  const getFilteredFiles = (files, searchBy, showBy) => {
-    const filteredByStatus =
-      showBy === "Все"
-        ? files
-        : files.filter((file) => {
-            return file.status === showBy;
-          });
-
-    const clearSearchQuery = searchBy.trim().toLowerCase();
-
-    return filteredByStatus.filter((file) =>
-      file.name.toLowerCase().includes(clearSearchQuery)
-    );
+  const getFilteredFiles = (files, showBy) => {
+    return showBy === "Все"
+      ? files
+      : files.filter((file) => {
+          return file.status === showBy;
+        });
   };
 
-  const filteredFiles = getFilteredFiles(files, searchBy, showBy);
-
+  const filteredFiles = getFilteredFiles(files, showBy);
+  console.log("filteredFiles", filteredFiles);
   // Sorting
   function parseCustomDate(dateStr) {
     const [date, time] = dateStr.split(" ");
@@ -344,8 +233,8 @@ const Documents = () => {
             <InputGroupInput
               placeholder="Поиск"
               className="text-(length:--font-size-base) md:text-(length:--font-size-base)"
-              value={searchBy}
-              onInput={(event) => setSearchBy(event.target.value)}
+              value={searchQuery}
+              onInput={(event) => setSearchQuery(event.target.value)}
             />
             <InputGroupAddon>
               <Search />
