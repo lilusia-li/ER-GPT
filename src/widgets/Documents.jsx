@@ -55,14 +55,13 @@ import { useDocuments } from "@/api/documents";
 const Documents = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
   const [sortBy, setSortBy] = useState("count");
-  const [showBy, setShowBy] = useState("Все");
+  const [filterOption, setFilterOption] = useState("Все");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const { data, isLoading } = useDocuments({ searchQuery });
+  const { data, isLoading } = useDocuments({ searchQuery, filterOption });
 
   const files = data?.result || [];
-  console.log(files);
   const total = data?.total || 0;
   // const [files, setFiles] = useState([]);
 
@@ -112,17 +111,6 @@ const Documents = () => {
     }));
   };
 
-  // Filtration
-  const getFilteredFiles = (files, showBy) => {
-    return showBy === "Все"
-      ? files
-      : files.filter((file) => {
-          return file.status === showBy;
-        });
-  };
-
-  const filteredFiles = getFilteredFiles(files, showBy);
-  console.log("filteredFiles", filteredFiles);
   // Sorting
   function parseCustomDate(dateStr) {
     const [date, time] = dateStr.split(" ");
@@ -131,7 +119,7 @@ const Documents = () => {
     return new Date(year, month - 1, day, hours, minutes);
   }
 
-  const sortedAndFilteredFiles = [...filteredFiles].sort((a, b) => {
+  const sortedFiles = [...files].sort((a, b) => {
     if (sortBy === "time")
       return sortOrder === "asc"
         ? parseCustomDate(a.uploadTime) - parseCustomDate(b.uploadTime)
@@ -142,7 +130,7 @@ const Documents = () => {
       : b.requests - a.requests;
   });
   let i = 1;
-  sortedAndFilteredFiles.map((file) => {
+  sortedFiles.map((file) => {
     file.orderNumber = i;
     i++;
   });
@@ -154,7 +142,7 @@ const Documents = () => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
 
-  const displayedFiles = sortedAndFilteredFiles.slice(startIndex, endIndex);
+  const displayedFiles = sortedFiles.slice(startIndex, endIndex);
 
   return (
     <div className="flex flex-col h-full p-6 w-full">
@@ -167,7 +155,7 @@ const Documents = () => {
 
       <div className="flex gap-2 flex-wrap justify-between py-4">
         <div className="flex gap-2 flex-wrap">
-          <Select value={showBy} onValueChange={setShowBy}>
+          <Select value={filterOption} onValueChange={setFilterOption}>
             <SelectTrigger className="w-40 text-(length:--font-size-base)">
               <SelectValue />
             </SelectTrigger>
@@ -300,7 +288,7 @@ const Documents = () => {
       </div>
 
       <div className="h-0 grow overflow-auto">
-        {sortedAndFilteredFiles.length <= 0 ? (
+        {sortedFiles.length <= 0 ? (
           files.length <= 0 ? (
             <Alert>
               <InfoIcon />
@@ -411,7 +399,7 @@ const Documents = () => {
       </div>
 
       <CustomPagination
-        totalItems={sortedAndFilteredFiles.length}
+        totalItems={sortedFiles.length}
         pageSize={pageSize}
         currentPage={currentPage}
         onPageChange={setCurrentPage}

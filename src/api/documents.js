@@ -113,9 +113,9 @@ const DOCUMENTS = [
   },
 ];
 
-export const useDocuments = ({ searchQuery }) => {
+export const useDocuments = ({ searchQuery, filterOption }) => {
   return useQuery({
-    queryKey: ["documents", { searchQuery }],
+    queryKey: ["documents", { searchQuery, filterOption }],
     queryFn: async () => {
       const clearSearchQuery = searchQuery.trim().toLowerCase();
 
@@ -125,10 +125,17 @@ export const useDocuments = ({ searchQuery }) => {
           )
         : DOCUMENTS;
 
+      const documentsFilteredByFilterOption =
+        filterOption === "Все"
+          ? documentsFilteredBySearchQuery
+          : documentsFilteredBySearchQuery.filter((file) => {
+              return file.status === filterOption;
+            });
+
       setTimeout(() => {}, 2000);
       return {
-        result: documentsFilteredBySearchQuery,
-        total: documentsFilteredBySearchQuery.length,
+        result: documentsFilteredByFilterOption,
+        total: documentsFilteredByFilterOption.length,
       };
     },
   });
