@@ -1,8 +1,8 @@
 import "./App.css";
-import Dataset from "./widgets/Dataset";
+import DatasetPage from "./widgets/DatasetPage";
 
 function App() {
-  return <Dataset></Dataset>;
+  return <DatasetPage></DatasetPage>;
 }
 
 export default App;

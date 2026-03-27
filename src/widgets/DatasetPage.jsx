@@ -3,7 +3,7 @@ import Documents from "./Documents";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const Dataset = () => {
+const DatasetPage = () => {
   return (
     <>
       <TooltipProvider>
@@ -19,4 +19,4 @@ const Dataset = () => {
     </>
   );
 };
-export default Dataset;
+export default DatasetPage;
