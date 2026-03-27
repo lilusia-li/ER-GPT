@@ -224,10 +224,6 @@ const Documents = () => {
   }
 
   const sortedAndFilteredFiles = [...filteredFiles].sort((a, b) => {
-    console.log("Запускаем сортировку");
-    console.log("sortBy", sortBy);
-    console.log("sortOrder", sortOrder);
-
     if (sortBy === "time")
       return sortOrder === "asc"
         ? parseCustomDate(a.uploadTime) - parseCustomDate(b.uploadTime)
@@ -251,11 +247,6 @@ const Documents = () => {
   const endIndex = startIndex + pageSize;
 
   const displayedFiles = sortedAndFilteredFiles.slice(startIndex, endIndex);
-  console.log(
-    sortedAndFilteredFiles.map((file) => {
-      return file.uploadTime;
-    })
-  );
 
   return (
     <div className="flex flex-col h-full p-[1.5rem]">
