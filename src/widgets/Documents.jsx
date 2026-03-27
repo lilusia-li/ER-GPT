@@ -199,7 +199,7 @@ const Documents = () => {
       file.id === fileId
         ? {
             ...file,
-            status: file.status === "Отключено" ? "Доступно" : "Отключено",
+            status: file.status === "Отключено" ? "Включено" : "Отключено",
           }
         : file
     );
@@ -213,7 +213,12 @@ const Documents = () => {
   };
 
   // Filtration
-  const filteredFiles = [...files]; // Нужно сделать фильтрацию
+  const filteredFiles =
+    showBy === "Все"
+      ? files
+      : files.filter((file) => {
+          return file.status === showBy;
+        });
 
   // Sorting
   function parseCustomDate(dateStr) {
