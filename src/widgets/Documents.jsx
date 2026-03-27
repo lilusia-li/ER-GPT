@@ -432,8 +432,8 @@ const Documents = () => {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="text-[0.75rem] ">
-                <TableHead className="w-[50px] ">
+              <TableRow className="text-[0.75rem]">
+                <TableHead className="min-w-[3.2rem]">
                   <div className="flex gap-[0.5rem] items-center">
                     <Checkbox
                       checked={isAllSelected}
@@ -443,7 +443,9 @@ const Documents = () => {
                     #
                   </div>
                 </TableHead>
-                <TableHead className="max-w-[200px]">НАЗВАНИЕ ФАЙЛА</TableHead>
+                <TableHead className="min-w-[12.5rem] max-w-[30%]">
+                  НАЗВАНИЕ ФАЙЛА
+                </TableHead>
                 <TableHead className="whitespace-normal">
                   РЕЖИМ ДРОБЛЕНИЯ
                 </TableHead>
@@ -455,7 +457,7 @@ const Documents = () => {
                   ВРЕМЯ ЗАГРУЗКИ
                 </TableHead>
                 <TableHead>СТАТУС</TableHead>
-                <TableHead className="w-[50px]">ДЕЙСТВИЕ</TableHead>
+                <TableHead className="min-w-[3.2rem]">ДЕЙСТВИЕ</TableHead>
               </TableRow>
             </TableHeader>
 
