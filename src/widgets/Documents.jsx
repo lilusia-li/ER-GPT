@@ -59,15 +59,18 @@ const Documents = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  const { data, isLoading } = useDocuments({ searchQuery, filterOption });
-
+  const { data, isLoading } = useDocuments({
+    searchQuery,
+    filterOption,
+  });
   const files = data?.result || [];
   const total = data?.total || 0;
+  const areNoDocuments = data?.areNoDocuments ?? true;
+
   // const [files, setFiles] = useState([]);
 
   // Table-column  "checkbox"
-  const isAllSelected =
-    files.length > 0 && selectedFiles.length === files.length;
+  const isAllSelected = total > 0 && selectedFiles.length === total;
 
   const toggleAll = () => {
     if (isAllSelected) {
@@ -230,7 +233,13 @@ const Documents = () => {
           </InputGroup>
 
           <div className="flex gap-x-[0.1rem]">
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select
+              value={sortBy}
+              onValueChange={(value) => {
+                setCurrentPage(1);
+                setSortBy(value);
+              }}
+            >
               <SelectTrigger className="relative w-[310px] pl-[120px] text-[length:var(--font-size-base)]">
                 <span className="absolute left-[0.5rem]">Сортировать по:</span>
                 <SelectValue />
@@ -288,8 +297,10 @@ const Documents = () => {
       </div>
 
       <div className="h-0 grow overflow-auto">
-        {sortedFiles.length <= 0 ? (
-          files.length <= 0 ? (
+        {isLoading ? (
+          <div>Загрузка</div>
+        ) : total <= 0 ? (
+          areNoDocuments ? (
             <Alert>
               <InfoIcon />
               <AlertTitle>Файлы не добавлены</AlertTitle>
@@ -399,9 +410,9 @@ const Documents = () => {
       </div>
 
       <CustomPagination
-        totalItems={sortedFiles.length}
+        totalItems={total}
         pageSize={pageSize}
-        currentPage={currentPage}
+        currentPage={total > 0 ? currentPage : 0}
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
       ></CustomPagination>

@@ -132,10 +132,12 @@ export const useDocuments = ({ searchQuery, filterOption }) => {
               return file.status === filterOption;
             });
 
-      setTimeout(() => {}, 2000);
+      setTimeout(() => {}, 9000);
+
       return {
         result: documentsFilteredByFilterOption,
         total: documentsFilteredByFilterOption.length,
+        areNoDocuments: DOCUMENTS.length === 0,
       };
     },
   });
