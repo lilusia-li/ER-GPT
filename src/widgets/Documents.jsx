@@ -31,6 +31,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import {
   ArrowUpWideNarrow,
   ArrowDownNarrowWide,
@@ -38,6 +40,7 @@ import {
   NotebookPen,
   MoreHorizontal,
   Settings2,
+  InfoIcon,
 } from "lucide-react";
 
 import CustomPagination from "@/components/CustomPagination.jsx";
@@ -408,91 +411,102 @@ const Documents = () => {
       </div>
 
       <div className="h-0 grow overflow-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="text-[0.75rem] ">
-              <TableHead className="w-[50px] ">
-                <div className="flex gap-[0.5rem] items-center">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={toggleAll}
-                    aria-label="Выбрать всё"
-                  />
-                  #
-                </div>
-              </TableHead>
-              <TableHead className="max-w-[200px]">НАЗВАНИЕ ФАЙЛА</TableHead>
-              <TableHead className="whitespace-normal">
-                РЕЖИМ ДРОБЛЕНИЯ
-              </TableHead>
-              <TableHead>СЛОВА</TableHead>
-              <TableHead className="whitespace-normal">
-                КОЛИЧЕСТВО ОБРАЩЕНИЙ
-              </TableHead>
-              <TableHead className="whitespace-normal">
-                ВРЕМЯ ЗАГРУЗКИ
-              </TableHead>
-              <TableHead>СТАТУС</TableHead>
-              <TableHead className="w-[50px]">ДЕЙСТВИЕ</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="text-[0.875rem]">
-            {displayedFiles.map((file) => (
-              <TableRow key={file.id} className="py-0">
-                <TableCell>
+        {sortedAndFilteredFiles.length <= 0 ? (
+          <Alert variant="destructive">
+            <InfoIcon />
+            <AlertTitle>Файлы не найдены</AlertTitle>
+            <AlertDescription>
+              Нет файлов, удовлетворяющих условиям фильтрации и/или поиска.
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="text-[0.75rem] ">
+                <TableHead className="w-[50px] ">
                   <div className="flex gap-[0.5rem] items-center">
                     <Checkbox
-                      checked={selectedFiles.includes(file.id)}
-                      onCheckedChange={() => toggleFile(file.id)}
+                      checked={isAllSelected}
+                      onCheckedChange={toggleAll}
+                      aria-label="Выбрать всё"
                     />
-                    {file?.orderNumber}
+                    #
                   </div>
-                </TableCell>
-                <TableCell className="font-medium">{file.name}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{file.mode}</Badge>
-                </TableCell>
-                <TableCell>{file.words}</TableCell>
-                <TableCell>{file.requests}</TableCell>
-                <TableCell>{file.uploadTime}</TableCell>
-                <TableCell>
-                  <div className="flex gap-[0.5rem] items-center">
-                    <div
-                      className={cn(
-                        "h-2 w-2 rounded-[3px]",
-                        enabledStates[file.id]
-                          ? "bg-green-500"
-                          : "border border-solid border-gray-400"
-                      )}
-                    ></div>
-                    {file.status}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={enabledStates[file.id]}
-                    onCheckedChange={(checked) =>
-                      toggleSwitch(file.id, checked)
-                    }
-                  />
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Settings2 />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="text-[0.75rem]">
-                      <p>Настройки сегментации</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+                </TableHead>
+                <TableHead className="max-w-[200px]">НАЗВАНИЕ ФАЙЛА</TableHead>
+                <TableHead className="whitespace-normal">
+                  РЕЖИМ ДРОБЛЕНИЯ
+                </TableHead>
+                <TableHead>СЛОВА</TableHead>
+                <TableHead className="whitespace-normal">
+                  КОЛИЧЕСТВО ОБРАЩЕНИЙ
+                </TableHead>
+                <TableHead className="whitespace-normal">
+                  ВРЕМЯ ЗАГРУЗКИ
+                </TableHead>
+                <TableHead>СТАТУС</TableHead>
+                <TableHead className="w-[50px]">ДЕЙСТВИЕ</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+
+            <TableBody className="text-[0.875rem]">
+              {displayedFiles.map((file) => (
+                <TableRow key={file.id} className="py-0">
+                  <TableCell>
+                    <div className="flex gap-[0.5rem] items-center">
+                      <Checkbox
+                        checked={selectedFiles.includes(file.id)}
+                        onCheckedChange={() => toggleFile(file.id)}
+                      />
+                      {file?.orderNumber}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">{file.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{file.mode}</Badge>
+                  </TableCell>
+                  <TableCell>{file.words}</TableCell>
+                  <TableCell>{file.requests}</TableCell>
+                  <TableCell>{file.uploadTime}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-[0.5rem] items-center">
+                      <div
+                        className={cn(
+                          "h-2 w-2 rounded-[3px]",
+                          enabledStates[file.id]
+                            ? "bg-green-500"
+                            : "border border-solid border-gray-400"
+                        )}
+                      ></div>
+                      {file.status}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={enabledStates[file.id]}
+                      onCheckedChange={(checked) =>
+                        toggleSwitch(file.id, checked)
+                      }
+                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Settings2 />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="text-[0.75rem]">
+                        <p>Настройки сегментации</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       <CustomPagination
