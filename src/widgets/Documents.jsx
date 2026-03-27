@@ -412,13 +412,23 @@ const Documents = () => {
 
       <div className="h-0 grow overflow-auto">
         {sortedAndFilteredFiles.length <= 0 ? (
-          <Alert variant="destructive">
-            <InfoIcon />
-            <AlertTitle>Файлы не найдены</AlertTitle>
-            <AlertDescription>
-              Нет файлов, удовлетворяющих условиям фильтрации и/или поиска.
-            </AlertDescription>
-          </Alert>
+          files.length <= 0 ? (
+            <Alert>
+              <InfoIcon />
+              <AlertTitle>Файлы не добавлены</AlertTitle>
+              <AlertDescription>
+                Вы еще не загрузили ни один файл.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert variant="destructive">
+              <InfoIcon />
+              <AlertTitle>Файлы не найдены</AlertTitle>
+              <AlertDescription>
+                Нет файлов, удовлетворяющих условиям фильтрации и/или поиска.
+              </AlertDescription>
+            </Alert>
+          )
         ) : (
           <Table>
             <TableHeader>
