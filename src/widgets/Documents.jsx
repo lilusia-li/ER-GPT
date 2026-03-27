@@ -268,7 +268,7 @@ const Documents = () => {
   const displayedFiles = sortedAndFilteredFiles.slice(startIndex, endIndex);
 
   return (
-    <div className="flex flex-col h-full p-[1.5rem]">
+    <div className="flex flex-col h-full p-6 w-full">
       <h2 className="text-[1rem]">Документы</h2>
       <p className="text-[0.875rem]">
         Здесь отображаются все файлы базы знаний, и вся база знаний может быть
@@ -276,10 +276,10 @@ const Documents = () => {
         <a href="/">Подробнее</a>
       </p>
 
-      <div className="flex gap-[0.5rem] flex-wrap justify-between py-[1rem]">
-        <div className="flex gap-[0.5rem] flex-wrap">
+      <div className="flex gap-2 flex-wrap justify-between py-4">
+        <div className="flex gap-2 flex-wrap">
           <Select value={showBy} onValueChange={setShowBy}>
-            <SelectTrigger className="w-[160px] text-[length:var(--font-size-base)]">
+            <SelectTrigger className="w-40 text-(length:--font-size-base)">
               <SelectValue />
             </SelectTrigger>
             <SelectContent position="popper">
@@ -340,10 +340,10 @@ const Documents = () => {
             </SelectContent>
           </Select>
 
-          <InputGroup className="max-w-[200px]">
+          <InputGroup className="max-w-50">
             <InputGroupInput
               placeholder="Поиск"
-              className="text-[length:var(--font-size-base)]"
+              className="text-(length:--font-size-base) md:text-(length:--font-size-base)"
               value={searchBy}
               onInput={(event) => setSearchBy(event.target.value)}
             />
