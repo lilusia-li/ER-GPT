@@ -52,6 +52,7 @@ const Documents = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
   const [sortBy, setSortBy] = useState("count");
   const [showBy, setShowBy] = useState("Все");
+  const [searchBy, setSearchBy] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const [files, setFiles] = useState([
@@ -213,12 +214,22 @@ const Documents = () => {
   };
 
   // Filtration
-  const filteredFiles =
-    showBy === "Все"
-      ? files
-      : files.filter((file) => {
-          return file.status === showBy;
-        });
+  const getFilteredFiles = (files, searchBy, showBy) => {
+    const filteredByStatus =
+      showBy === "Все"
+        ? files
+        : files.filter((file) => {
+            return file.status === showBy;
+          });
+
+    const clearSearchQuery = searchBy.trim().toLowerCase();
+
+    return filteredByStatus.filter((file) =>
+      file.name.toLowerCase().includes(clearSearchQuery)
+    );
+  };
+
+  const filteredFiles = getFilteredFiles(files, searchBy, showBy);
 
   // Sorting
   function parseCustomDate(dateStr) {
@@ -326,10 +337,12 @@ const Documents = () => {
             </SelectContent>
           </Select>
 
-          <InputGroup className="max-w-[200px] ">
+          <InputGroup className="max-w-[200px]">
             <InputGroupInput
               placeholder="Поиск"
               className="text-[length:var(--font-size-base)]"
+              value={searchBy}
+              onInput={(event) => setSearchBy(event.target.value)}
             />
             <InputGroupAddon>
               <Search />
