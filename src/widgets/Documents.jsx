@@ -496,7 +496,7 @@ const Documents = () => {
       </div>
 
       <CustomPagination
-        totalItems={files.length}
+        totalItems={sortedAndFilteredFiles.length}
         pageSize={pageSize}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
