@@ -177,7 +177,7 @@ const DocumentsApi = {
 export const useDocuments = ({
   searchQuery,
   filterOption,
-  page,
+  currentPage,
   pageSize,
   sortBy,
   sortOrder,
@@ -185,13 +185,13 @@ export const useDocuments = ({
   return useQuery({
     queryKey: [
       "documents",
-      { searchQuery, filterOption, page, pageSize, sortBy, sortOrder },
+      { searchQuery, filterOption, currentPage, pageSize, sortBy, sortOrder },
     ],
     queryFn: async () => {
       const data = await DocumentsApi.getDocuments(
         searchQuery,
         filterOption,
-        page,
+        currentPage,
         pageSize,
         sortBy,
         sortOrder

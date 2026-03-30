@@ -53,20 +53,19 @@ import { cn } from "@/lib/utils";
 import { useDocuments } from "@/api/documents";
 
 const Documents = () => {
-  const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
-  const [sortBy, setSortBy] = useState("count");
-  const [filterOption, setFilterOption] = useState("Все");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState([]);
-
-  // Pagination
+  const [filterOption, setFilterOption] = useState("Все");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState("count");
+  const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const { data, isLoading } = useDocuments({
-    searchQuery: searchQuery ? searchQuery.trim() : "",
+    searchQuery: searchQuery ? searchQuery.trim().toLowerCase() : "",
     filterOption,
-    page: currentPage,
+    currentPage,
     pageSize,
     sortBy,
     sortOrder,
@@ -75,12 +74,11 @@ const Documents = () => {
   const total = data?.total || 0;
   const areNoDocuments = data?.total === 0;
 
-  // const [files, setFiles] = useState([]);
-
   // Table-column  "checkbox"
-  const isAllSelected = selectedFiles.length === files.length;
+  const isAllSelected =
+    selectedFiles.length === files.length && files.length > 0;
 
-  const toggleAll = () => {
+  const selectAll = () => {
     if (isAllSelected) {
       setSelectedFiles([]);
     } else {
@@ -96,6 +94,7 @@ const Documents = () => {
     );
   };
 
+  // Table-column  "ДЕЙСТВИЕ"
   const toggleSwitch = (fileId, checked) => {
     // const updatedFiles =
     // ? {
@@ -275,14 +274,14 @@ const Documents = () => {
             </Alert>
           )
         ) : (
-          <Table>
+          <Table className="w-0 grow">
             <TableHeader>
               <TableRow className="text-[0.75rem]">
                 <TableHead className="min-w-[3.2rem]">
                   <div className="flex gap-2 items-center">
                     <Checkbox
                       checked={isAllSelected}
-                      onCheckedChange={toggleAll}
+                      onCheckedChange={selectAll}
                       aria-label="Выбрать всё"
                     />
                     #
