@@ -74,7 +74,7 @@ const Documents = () => {
   });
   const files = data?.result || [];
   const total = data?.total || 0;
-  const areNoDocuments = data?.total === 0;
+  const areNoDocuments = data?.totalBeforeFilters === 0;
 
   // Table-column  "checkbox"
   const isAllSelected =

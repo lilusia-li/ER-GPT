@@ -115,36 +115,43 @@ const DocumentsApi = {
     sortBy = "count",
     sortOrder = "asc"
   ) => {
+    const parseCustomDate = (dateStr) => {
+      const [date, time] = dateStr.split(" ");
+      const [day, month, year] = date.split(".");
+      const [hours, minutes] = time.split(":");
+      return new Date(year, month - 1, day, hours, minutes);
+    };
+
     const rawDocs = localStorage.getItem("documents");
 
-    let docs = rawDocs ? JSON.parse(rawDocs) : DOCUMENTS;
-    docs = searchQuery
+    const docs = rawDocs ? JSON.parse(rawDocs) : DOCUMENTS;
+    let filteredDocs = searchQuery
       ? docs.filter((document) =>
           document.name.toLowerCase().includes(searchQuery)
         )
       : docs;
 
-    const filteredDocs =
+    filteredDocs =
       filterOption === "Все"
-        ? docs
-        : docs.filter((file) => {
+        ? filteredDocs
+        : filteredDocs.filter((file) => {
             return file.status === filterOption;
           });
 
     return {
       result: filteredDocs
-        .slice((page - 1) * pageSize, page * pageSize)
         .toSorted((a, b) => {
           if (sortBy === "time")
             return sortOrder === "asc"
               ? parseCustomDate(a.uploadTime) - parseCustomDate(b.uploadTime)
               : parseCustomDate(b.uploadTime) - parseCustomDate(a.uploadTime);
-
           return sortOrder === "asc"
             ? a.requests - b.requests
             : b.requests - a.requests;
-        }),
+        })
+        .slice((page - 1) * pageSize, page * pageSize),
       total: filteredDocs.length,
+      totalBeforeFilters: docs.length,
     };
   },
 
@@ -204,14 +211,14 @@ export const useDocuments = ({
 };
 
 export const useSetDocumentState = () => {
-  const queryClient = useQueryClient(); // ← импортировать
+  const queryClient = useQueryClient();
 
   const setDocumentState = useMutation({
     mutationFn: async ({ id, enabled }) => {
       await DocumentsApi.updateDocument(id, { enabled });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["documents"] }); // ✅ работает
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
   });
 
