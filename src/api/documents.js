@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const DOCUMENTS = [
   {
@@ -116,12 +116,13 @@ const DocumentsApi = {
     sortOrder = "asc"
   ) => {
     const rawDocs = localStorage.getItem("documents");
+
     let docs = rawDocs ? JSON.parse(rawDocs) : DOCUMENTS;
     docs = searchQuery
-      ? DOCUMENTS.filter((document) =>
+      ? docs.filter((document) =>
           document.name.toLowerCase().includes(searchQuery)
         )
-      : DOCUMENTS;
+      : docs;
 
     const filteredDocs =
       filterOption === "Все"
@@ -203,9 +204,14 @@ export const useDocuments = ({
 };
 
 export const useSetDocumentState = () => {
+  const queryClient = useQueryClient(); // ← импортировать
+
   const setDocumentState = useMutation({
-    mutationFn: async ({ enabled, id }) => {
+    mutationFn: async ({ id, enabled }) => {
       await DocumentsApi.updateDocument(id, { enabled });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] }); // ✅ работает
     },
   });
 

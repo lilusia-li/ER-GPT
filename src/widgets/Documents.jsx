@@ -50,7 +50,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { useDocuments } from "@/api/documents";
+import { useDocuments, useSetDocumentState } from "@/api/documents";
 
 const Documents = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,6 +61,8 @@ const Documents = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // "desc" || "asc"
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const { mutate, isPending, error } = useSetDocumentState();
 
   const { data, isLoading } = useDocuments({
     searchQuery: searchQuery ? searchQuery.trim().toLowerCase() : "",
@@ -95,18 +97,8 @@ const Documents = () => {
   };
 
   // Table-column  "ДЕЙСТВИЕ"
-  const toggleSwitch = (fileId, checked) => {
-    // const updatedFiles =
-    // ? {
-    //   ...file,
-    //   status: file.status === "Отключено" ? "Включено" : "Отключено",
-    // }
-    files.map((file) => {
-      if (file.id === fileId)
-        file.status === "Отключено" ? "Включено" : "Отключено";
-    }); // просто изменяем статус, надеясь на ссылочность объектов
-
-    // setFiles(updatedFiles);
+  const toggleSwitch = (fileId, newState) => {
+    mutate({ id: fileId, enabled: newState });
   };
 
   return (
@@ -114,7 +106,7 @@ const Documents = () => {
       <h2 className="text-[1rem]">Документы</h2>
       <p className="text-[0.875rem]">
         Здесь отображаются все файлы базы знаний, и вся база знаний может быть
-        связана с цитатами Dify или проиндексирована с помощью чата.{" "}
+        связана с цитатами Dify или проиндексирована с помощью чата.
         <a href="/">Подробнее</a>
       </p>
 
@@ -340,9 +332,9 @@ const Documents = () => {
                   <TableCell>
                     <Switch
                       checked={file.enabled}
-                      onCheckedChange={(checked) =>
-                        toggleSwitch(file.id, checked)
-                      }
+                      onCheckedChange={(newState) => {
+                        toggleSwitch(file.id, newState);
+                      }}
                     />
                     <Tooltip>
                       <TooltipTrigger asChild>
