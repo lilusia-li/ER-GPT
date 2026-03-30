@@ -135,6 +135,10 @@ const DocumentsApi = {
       filterOption === "Все"
         ? filteredDocs
         : filteredDocs.filter((file) => {
+            // пока что обрабатываем только 2 статуса - Включено / Отключено
+            if (filterOption === "Включено") return file.enabled;
+            if (filterOption === "Отключено") return !file.enabled;
+
             return file.status === filterOption;
           });
 

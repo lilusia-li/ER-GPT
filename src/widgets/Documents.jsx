@@ -327,7 +327,7 @@ const Documents = () => {
                               : "border border-solid border-gray-400"
                           )}
                         ></div>
-                        {file.status}
+                        {file.enabled ? "Включено" : "Отключено"}
                       </div>
                     </TableCell>
                     <TableCell>
