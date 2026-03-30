@@ -59,13 +59,21 @@ const Documents = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const { data, isLoading } = useDocuments({
-    searchQuery,
+    searchQuery: searchQuery ? searchQuery.trim() : "",
     filterOption,
+    page: currentPage,
+    pageSize,
+    sortBy,
+    sortOrder,
   });
   const files = data?.result || [];
   const total = data?.total || 0;
-  const areNoDocuments = data?.areNoDocuments ?? true;
+  const areNoDocuments = data?.total === 0;
 
   // const [files, setFiles] = useState([]);
 
@@ -80,20 +88,13 @@ const Documents = () => {
     }
   };
 
-  const toggleFile = (fileId) => {
+  const selectFile = (fileId) => {
     setSelectedFiles((prev) =>
       prev.includes(fileId)
         ? prev.filter((id) => id !== fileId)
         : [...prev, fileId]
     );
   };
-
-  // Table-column  "ДЕЙСТВИЕ"
-  const [enabledStates, setEnabledStates] = useState({});
-
-  files.map((file) => {
-    enabledStates[file.id] = enabledStates[file.id] || false;
-  });
 
   const toggleSwitch = (fileId, checked) => {
     // const updatedFiles =
@@ -107,45 +108,7 @@ const Documents = () => {
     }); // просто изменяем статус, надеясь на ссылочность объектов
 
     // setFiles(updatedFiles);
-
-    setEnabledStates((prev) => ({
-      ...prev,
-      [fileId]: checked,
-    }));
   };
-
-  // Sorting
-  function parseCustomDate(dateStr) {
-    const [date, time] = dateStr.split(" ");
-    const [day, month, year] = date.split(".");
-    const [hours, minutes] = time.split(":");
-    return new Date(year, month - 1, day, hours, minutes);
-  }
-
-  const sortedFiles = [...files].sort((a, b) => {
-    if (sortBy === "time")
-      return sortOrder === "asc"
-        ? parseCustomDate(a.uploadTime) - parseCustomDate(b.uploadTime)
-        : parseCustomDate(b.uploadTime) - parseCustomDate(a.uploadTime);
-
-    return sortOrder === "asc"
-      ? a.requests - b.requests
-      : b.requests - a.requests;
-  });
-  let i = 1;
-  sortedFiles.map((file) => {
-    file.orderNumber = i;
-    i++;
-  });
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-
-  const displayedFiles = sortedFiles.slice(startIndex, endIndex);
 
   return (
     <div className="flex flex-col h-full p-6 w-full">
@@ -247,13 +210,13 @@ const Documents = () => {
               <SelectContent>
                 <SelectItem
                   value="time"
-                  className="text-[length:var(--font-size-base)]"
+                  className="text-(length:--font-size-base)"
                 >
                   Время загрузки
                 </SelectItem>
                 <SelectItem
                   value="count"
-                  className="text-[length:var(--font-size-base)]"
+                  className="text-(length:--font-size-base)"
                 >
                   Количество извлечений
                 </SelectItem>
@@ -277,19 +240,13 @@ const Documents = () => {
           </div>
         </div>
 
-        <div className="flex gap-[0.5rem]">
-          <Button
-            variant="outline"
-            className="text-[length:var(--font-size-base)]"
-          >
+        <div className="flex gap-2">
+          <Button variant="outline" className="text-(length:--font-size-base)">
             <NotebookPen />
             Метаданные
           </Button>
 
-          <Button
-            variant="outline"
-            className="text-[length:var(--font-size-base)]"
-          >
+          <Button variant="outline" className="text-(length:--font-size-base)">
             <Plus />
             Добавить файл
           </Button>
@@ -322,7 +279,7 @@ const Documents = () => {
             <TableHeader>
               <TableRow className="text-[0.75rem]">
                 <TableHead className="min-w-[3.2rem]">
-                  <div className="flex gap-[0.5rem] items-center">
+                  <div className="flex gap-2 items-center">
                     <Checkbox
                       checked={isAllSelected}
                       onCheckedChange={toggleAll}
@@ -331,7 +288,7 @@ const Documents = () => {
                     #
                   </div>
                 </TableHead>
-                <TableHead className="min-w-[12.5rem] max-w-[30%]">
+                <TableHead className="min-w-50 max-w-[30%]">
                   НАЗВАНИЕ ФАЙЛА
                 </TableHead>
                 <TableHead className="whitespace-normal">
@@ -350,13 +307,13 @@ const Documents = () => {
             </TableHeader>
 
             <TableBody className="text-[0.875rem]">
-              {displayedFiles.map((file) => (
+              {files.map((file) => (
                 <TableRow key={file.id} className="py-0">
                   <TableCell>
-                    <div className="flex gap-[0.5rem] items-center">
+                    <div className="flex gap-2 items-center">
                       <Checkbox
                         checked={selectedFiles.includes(file.id)}
-                        onCheckedChange={() => toggleFile(file.id)}
+                        onCheckedChange={() => selectFile(file.id)}
                       />
                       {file?.orderNumber}
                     </div>
@@ -369,11 +326,11 @@ const Documents = () => {
                   <TableCell>{file.requests}</TableCell>
                   <TableCell>{file.uploadTime}</TableCell>
                   <TableCell>
-                    <div className="flex gap-[0.5rem] items-center">
+                    <div className="flex gap-2 items-center">
                       <div
                         className={cn(
                           "h-2 w-2 rounded-[3px]",
-                          enabledStates[file.id]
+                          file.enabled
                             ? "bg-green-500"
                             : "border border-solid border-gray-400"
                         )}
@@ -383,7 +340,7 @@ const Documents = () => {
                   </TableCell>
                   <TableCell>
                     <Switch
-                      checked={enabledStates[file.id]}
+                      checked={file.enabled}
                       onCheckedChange={(checked) =>
                         toggleSwitch(file.id, checked)
                       }
@@ -415,7 +372,7 @@ const Documents = () => {
         currentPage={total > 0 ? currentPage : 0}
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
-      ></CustomPagination>
+      />
     </div>
   );
 };

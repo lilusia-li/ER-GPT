@@ -8,8 +8,7 @@ const DOCUMENTS = [
     words: "0",
     requests: 5,
     uploadTime: "19.03.2026 06:00",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 2,
@@ -18,8 +17,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 10,
     uploadTime: "19.03.2026 06:01",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: true,
   },
   {
     id: 3,
@@ -28,8 +26,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 7,
     uploadTime: "19.03.2026 06:02",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 4,
@@ -38,8 +35,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 3,
     uploadTime: "19.03.2026 06:03",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 5,
@@ -48,8 +44,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 4,
     uploadTime: "19.03.2026 06:03",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 6,
@@ -58,8 +53,7 @@ const DOCUMENTS = [
     words: "0",
     requests: 2,
     uploadTime: "19.03.2026 06:04",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 7,
@@ -68,8 +62,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 9,
     uploadTime: "19.03.2026 06:05",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 8,
@@ -78,8 +71,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 10,
     uploadTime: "19.03.2026 06:06",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 9,
@@ -88,8 +80,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 100,
     uploadTime: "19.03.2026 06:07",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 10,
@@ -98,8 +89,7 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 50,
     uploadTime: "19.03.2026 06:08",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
   {
     id: 11,
@@ -108,37 +98,116 @@ const DOCUMENTS = [
     words: "1.5k",
     requests: 80,
     uploadTime: "19.03.2026 06:10",
-    status: "Отключено",
-    orderNumber: null,
+    enabled: false,
   },
 ];
 
-export const useDocuments = ({ searchQuery, filterOption }) => {
+if (!localStorage.getItem("documents")) {
+  localStorage.setItem("documents", JSON.stringify(DOCUMENTS));
+}
+
+const DocumentsApi = {
+  getDocuments: async (
+    searchQuery,
+    filterOption,
+    page = 1,
+    pageSize = 10,
+    sortBy = "count",
+    sortOrder = "asc"
+  ) => {
+    const rawDocs = localStorage.getItem("documents");
+    let docs = rawDocs ? JSON.parse(rawDocs) : DOCUMENTS;
+    docs = searchQuery
+      ? DOCUMENTS.filter((document) =>
+          document.name.toLowerCase().includes(searchQuery)
+        )
+      : DOCUMENTS;
+
+    const filteredDocs =
+      filterOption === "Все"
+        ? docs
+        : docs.filter((file) => {
+            return file.status === filterOption;
+          });
+
+    return {
+      result: filteredDocs
+        .slice((page - 1) * pageSize, page * pageSize)
+        .toSorted((a, b) => {
+          if (sortBy === "time")
+            return sortOrder === "asc"
+              ? parseCustomDate(a.uploadTime) - parseCustomDate(b.uploadTime)
+              : parseCustomDate(b.uploadTime) - parseCustomDate(a.uploadTime);
+
+          return sortOrder === "asc"
+            ? a.requests - b.requests
+            : b.requests - a.requests;
+        }),
+      total: filteredDocs.length,
+    };
+  },
+
+  deleteDocument: async (id) => {
+    const rawDocs = localStorage.getItem("documents");
+    let docs = rawDocs ? JSON.parse(rawDocs) : DOCUMENTS;
+
+    docs = docs.filter((doc) => doc.id !== id);
+
+    localStorage.setItem("documents", JSON.stringify(docs));
+  },
+
+  updateDocument: async (id, data) => {
+    const rawDocs = localStorage.getItem("documents");
+    let docs = rawDocs ? JSON.parse(rawDocs) : DOCUMENTS;
+
+    docs = docs.map((doc) => {
+      if (doc.id === id) {
+        return {
+          ...doc,
+          ...data,
+        };
+      }
+      return doc;
+    });
+
+    localStorage.setItem("documents", JSON.stringify(docs));
+  },
+};
+
+export const useDocuments = ({
+  searchQuery,
+  filterOption,
+  page,
+  pageSize,
+  sortBy,
+  sortOrder,
+}) => {
   return useQuery({
-    queryKey: ["documents", { searchQuery, filterOption }],
+    queryKey: [
+      "documents",
+      { searchQuery, filterOption, page, pageSize, sortBy, sortOrder },
+    ],
     queryFn: async () => {
-      const clearSearchQuery = searchQuery.trim().toLowerCase();
+      const data = await DocumentsApi.getDocuments(
+        searchQuery,
+        filterOption,
+        page,
+        pageSize,
+        sortBy,
+        sortOrder
+      );
 
-      const documentsFilteredBySearchQuery = searchQuery
-        ? DOCUMENTS.filter((document) =>
-            document.name.toLowerCase().includes(clearSearchQuery)
-          )
-        : DOCUMENTS;
-
-      const documentsFilteredByFilterOption =
-        filterOption === "Все"
-          ? documentsFilteredBySearchQuery
-          : documentsFilteredBySearchQuery.filter((file) => {
-              return file.status === filterOption;
-            });
-
-      setTimeout(() => {}, 9000);
-
-      return {
-        result: documentsFilteredByFilterOption,
-        total: documentsFilteredByFilterOption.length,
-        areNoDocuments: DOCUMENTS.length === 0,
-      };
+      return data;
     },
   });
+};
+
+export const useSetDocumentState = () => {
+  const setDocumentState = useMutation({
+    mutationFn: async ({ enabled, id }) => {
+      await DocumentsApi.updateDocument(id, { enabled });
+    },
+  });
+
+  return setDocumentState;
 };
