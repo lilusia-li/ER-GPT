@@ -78,7 +78,7 @@ const Documents = () => {
   // const [files, setFiles] = useState([]);
 
   // Table-column  "checkbox"
-  const isAllSelected = total > 0 && selectedFiles.length === total;
+  const isAllSelected = selectedFiles.length === files.length;
 
   const toggleAll = () => {
     if (isAllSelected) {
