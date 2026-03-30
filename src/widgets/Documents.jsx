@@ -244,117 +244,119 @@ const Documents = () => {
         </div>
       </div>
 
-      <div className="h-0 grow overflow-auto">
-        {isLoading ? (
-          <div>Загрузка</div>
-        ) : total <= 0 ? (
-          areNoDocuments ? (
-            <Alert>
-              <InfoIcon />
-              <AlertTitle>Файлы не добавлены</AlertTitle>
-              <AlertDescription>
-                Вы еще не загрузили ни один файл.
-              </AlertDescription>
-            </Alert>
+      <div className="h-0 grow overflow-auto flex">
+        <div className="w-0 grow">
+          {isLoading ? (
+            <div>Загрузка</div>
+          ) : total <= 0 ? (
+            areNoDocuments ? (
+              <Alert>
+                <InfoIcon />
+                <AlertTitle>Файлы не добавлены</AlertTitle>
+                <AlertDescription>
+                  Вы еще не загрузили ни один файл.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <Alert variant="destructive">
+                <InfoIcon />
+                <AlertTitle>Файлы не найдены</AlertTitle>
+                <AlertDescription>
+                  Нет файлов, удовлетворяющих условиям фильтрации и/или поиска.
+                </AlertDescription>
+              </Alert>
+            )
           ) : (
-            <Alert variant="destructive">
-              <InfoIcon />
-              <AlertTitle>Файлы не найдены</AlertTitle>
-              <AlertDescription>
-                Нет файлов, удовлетворяющих условиям фильтрации и/или поиска.
-              </AlertDescription>
-            </Alert>
-          )
-        ) : (
-          <Table className="w-0 grow">
-            <TableHeader>
-              <TableRow className="text-[0.75rem]">
-                <TableHead className="min-w-[3.2rem]">
-                  <div className="flex gap-2 items-center">
-                    <Checkbox
-                      checked={isAllSelected}
-                      onCheckedChange={selectAll}
-                      aria-label="Выбрать всё"
-                    />
-                    #
-                  </div>
-                </TableHead>
-                <TableHead className="min-w-50 max-w-[30%]">
-                  НАЗВАНИЕ ФАЙЛА
-                </TableHead>
-                <TableHead className="whitespace-normal">
-                  РЕЖИМ ДРОБЛЕНИЯ
-                </TableHead>
-                <TableHead>СЛОВА</TableHead>
-                <TableHead className="whitespace-normal">
-                  КОЛИЧЕСТВО ОБРАЩЕНИЙ
-                </TableHead>
-                <TableHead className="whitespace-normal">
-                  ВРЕМЯ ЗАГРУЗКИ
-                </TableHead>
-                <TableHead>СТАТУС</TableHead>
-                <TableHead className="min-w-[3.2rem]">ДЕЙСТВИЕ</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody className="text-[0.875rem]">
-              {files.map((file) => (
-                <TableRow key={file.id} className="py-0">
-                  <TableCell>
+            <Table>
+              <TableHeader>
+                <TableRow className="text-[0.75rem]">
+                  <TableHead className="min-w-[3.2rem]">
                     <div className="flex gap-2 items-center">
                       <Checkbox
-                        checked={selectedFiles.includes(file.id)}
-                        onCheckedChange={() => selectFile(file.id)}
+                        checked={isAllSelected}
+                        onCheckedChange={selectAll}
+                        aria-label="Выбрать всё"
                       />
-                      {file?.orderNumber}
+                      #
                     </div>
-                  </TableCell>
-                  <TableCell className="font-medium">{file.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{file.mode}</Badge>
-                  </TableCell>
-                  <TableCell>{file.words}</TableCell>
-                  <TableCell>{file.requests}</TableCell>
-                  <TableCell>{file.uploadTime}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2 items-center">
-                      <div
-                        className={cn(
-                          "h-2 w-2 rounded-[3px]",
-                          file.enabled
-                            ? "bg-green-500"
-                            : "border border-solid border-gray-400"
-                        )}
-                      ></div>
-                      {file.status}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Switch
-                      checked={file.enabled}
-                      onCheckedChange={(newState) => {
-                        toggleSwitch(file.id, newState);
-                      }}
-                    />
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <Settings2 />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent className="text-[0.75rem]">
-                        <p>Настройки сегментации</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+                  </TableHead>
+                  <TableHead className="min-w-50 max-w-[30%]">
+                    НАЗВАНИЕ ФАЙЛА
+                  </TableHead>
+                  <TableHead className="whitespace-normal">
+                    РЕЖИМ ДРОБЛЕНИЯ
+                  </TableHead>
+                  <TableHead>СЛОВА</TableHead>
+                  <TableHead className="whitespace-normal">
+                    КОЛИЧЕСТВО ОБРАЩЕНИЙ
+                  </TableHead>
+                  <TableHead className="whitespace-normal">
+                    ВРЕМЯ ЗАГРУЗКИ
+                  </TableHead>
+                  <TableHead>СТАТУС</TableHead>
+                  <TableHead className="min-w-[3.2rem]">ДЕЙСТВИЕ</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+              </TableHeader>
+
+              <TableBody className="text-[0.875rem]">
+                {files.map((file) => (
+                  <TableRow key={file.id} className="py-0">
+                    <TableCell>
+                      <div className="flex gap-2 items-center">
+                        <Checkbox
+                          checked={selectedFiles.includes(file.id)}
+                          onCheckedChange={() => selectFile(file.id)}
+                        />
+                        {file?.orderNumber}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">{file.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{file.mode}</Badge>
+                    </TableCell>
+                    <TableCell>{file.words}</TableCell>
+                    <TableCell>{file.requests}</TableCell>
+                    <TableCell>{file.uploadTime}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-2 items-center">
+                        <div
+                          className={cn(
+                            "h-2 w-2 rounded-[3px]",
+                            file.enabled
+                              ? "bg-green-500"
+                              : "border border-solid border-gray-400"
+                          )}
+                        ></div>
+                        {file.status}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={file.enabled}
+                        onCheckedChange={(newState) => {
+                          toggleSwitch(file.id, newState);
+                        }}
+                      />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Settings2 />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="text-[0.75rem]">
+                          <p>Настройки сегментации</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
       </div>
 
       <CustomPagination
